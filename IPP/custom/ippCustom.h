@@ -15,6 +15,12 @@ extern const QString IPP_CUSTOM_MSG;
 extern const QString IPP_CUSTOM_IPP;
 extern const QString IPP_CUSTOM_UNKNOWN;
 //------------------------------------------------------------------------------
+#ifdef IPP_CHK_WITH_EXCEPTIONS
+    #define IPP_CHK_ERR_REACTION    throw(errStr);
+#else
+    #define IPP_CHK_ERR_REACTION /*/пустышка/*/
+#endif
+//------------------------------------------------------------------------------
 #define CHK( x )\
 {\
     IppStatus __stts;\
@@ -35,7 +41,7 @@ extern const QString IPP_CUSTOM_UNKNOWN;
                                            IPP_CUSTOM_UNKNOWN\
                              );\
         qCritical() << errStr;\
-        /*/throw(errStr);/*/\
+        IPP_CHK_ERR_REACTION;\
     }\
 }
 //------------------------------------------------------------------------------
