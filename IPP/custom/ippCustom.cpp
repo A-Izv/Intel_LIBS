@@ -1,6 +1,9 @@
 //------------------------------------------------------------------------------
-#include <QDebug>
 #include "ippCustom.h"
+#include <QDebug>
+#include <mutex>
+//------------------------------------------------------------------------------
+namespace ippCustom {
 //------------------------------------------------------------------------------
 #ifdef IPP_CHK_WITH_EXCEPTIONS
     #define IPP_CHK_ERR_REACTION    \
@@ -10,12 +13,11 @@
     #define IPP_CHK_ERR_REACTION /*/пустышка/*/
 #endif
 //------------------------------------------------------------------------------
-#include <mutex>
 //------------------------------------------------------------------------------
 std::string CHKlastMessage;     // сохраняемое сообщение об ошибке
 std::mutex  CHKMutex;           // мьютекс для корректной многопоточной обработки
 //------------------------------------------------------------------------------
-bool ippChkIsOk() {
+bool isOk() {
     CHKMutex.lock();
     bool result = CHKlastMessage.empty();
     CHKMutex.unlock();
@@ -23,7 +25,7 @@ bool ippChkIsOk() {
     return result;
 }
 //------------------------------------------------------------------------------
-std::string ippChkLastMessage() {
+std::string lastMessage() {
     CHKMutex.lock();
     std::string result = CHKlastMessage;
     CHKMutex.unlock();
@@ -31,14 +33,14 @@ std::string ippChkLastMessage() {
     return result;
 }
 //------------------------------------------------------------------------------
-void ippChkPrepare()
+void prepare()
 {
     CHKMutex.lock();
     CHKlastMessage.clear();
     CHKMutex.unlock();
 }
 //------------------------------------------------------------------------------
-void ippChkDoOnError( IppStatus stts, const char *file, int line )
+void doOnError( IppStatus stts, const char *file, int line )
 {
  // формируем сообщение
     std::string m;
@@ -65,3 +67,4 @@ void ippChkDoOnError( IppStatus stts, const char *file, int line )
     IPP_CHK_ERR_REACTION;
 }
 //------------------------------------------------------------------------------
+} /* namespace ippCustom */
